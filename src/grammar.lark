@@ -1,0 +1,13 @@
+start: value
+?value: NUMBER -> number
+      | STRING -> string
+      | dictionary
+dictionary: "begin" pair* "end"
+pair: NAME ":=" value ";"
+NAME: /[A-Z]+/
+NUMBER: /[0-9]+\.[0-9]*/
+STRING: /"(?:[^"\\\x00-\x1f]|\\["\\\/bfnrt]|\\u[0-9a-fA-F]{4})*"/
+COMMENT: /#=(?s:.*?)=#/
+%import common.WS
+%ignore WS
+%ignore COMMENT
