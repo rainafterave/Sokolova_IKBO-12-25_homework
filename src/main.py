@@ -1,11 +1,11 @@
 """Translate standard input from variant 23 syntax to a JSON file."""
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
 from language import LanguageError, parse
+from json_output import write_json
 
 
 def main(argv=None):
@@ -16,12 +16,12 @@ def main(argv=None):
     try:
         source = sys.stdin.buffer.read().decode("utf-8-sig")
         result = parse(source)
-        args.output.write_text(
-            json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False),
-            encoding="utf-8",
-        )
+        write_json(args.output, result)
     except (LanguageError, OSError, UnicodeError) as error:
         print(f"Error: {error}", file=sys.stderr)
+        return 1
+    except RecursionError:
+        print("Error: configuration nesting is too deep", file=sys.stderr)
         return 1
     return 0
 
